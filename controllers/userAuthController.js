@@ -42,17 +42,10 @@ export const updateMe = catchAsync(async (req, res, next) => {
       )
     );
   }
-  const updatedUser = await User.findByIdAndUpdate(
-    req.user._id,
-    {
-      firstname: req.body.firstname,
-      lastname: req.body.lastname,
-      email: req.body.email,
-      phone: req.body.phone,
-      photo: req.body.photo,
-    },
-    { new: true, runValidators: true }
-  );
+  const updatedUser = await User.findByIdAndUpdate(req.user._id, req.body, {
+    new: true,
+    runValidators: true,
+  });
   res.status(200).json({
     status: 'success',
     user: updatedUser,
@@ -90,7 +83,6 @@ export const protect = catchAsync(async (req, res, next) => {
       new AppError('User recently changed password! Please log in again.', 401)
     );
   }
-
   req.user = currentUser;
   next();
 });
@@ -165,5 +157,9 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   user.password = req.body.password;
   user.passwordConfirm = req.body.passwordConfirm;
   await user.save();
+  res.status(200).json({
+    status: 'success',
+    message: 'Your password has been updated',
+  });
   // createAndSendToken(user, 200, res);
 });

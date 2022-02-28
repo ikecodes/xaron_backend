@@ -49,7 +49,7 @@ export const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     next(
       new AppError(
-        'this route is not for password update, please /updateMyPassword',
+        'this route is not for password update, please /updatePassword',
         400
       )
     );
@@ -172,5 +172,10 @@ export const updatePassword = catchAsync(async (req, res, next) => {
   rider.password = req.body.password;
   rider.passwordConfirm = req.body.passwordConfirm;
   await rider.save();
+
+  res.status(200).json({
+    status: 'success',
+    message: 'Your password has been updated',
+  });
   // createAndSendToken(rider, 200, res);
 });
