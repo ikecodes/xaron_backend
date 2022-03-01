@@ -12,8 +12,9 @@ process.on('uncaughtException', (err) => {
 import app from './app.js';
 
 const LocalDB = process.env.LOCAL_DATABASE;
+const RemoteDB = process.env.REMOTE_DATABASE;
 mongoose
-  .connect(LocalDB, {
+  .connect(RemoteDB, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
