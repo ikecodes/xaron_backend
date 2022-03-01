@@ -8,7 +8,7 @@ import {
   protect,
   resetPassword,
   forgotPassword,
-} from '../controllers/userAuthController.js';
+} from '../controllers/customerAuthController.js';
 const router = express.Router();
 
 router.post('/signup', signup);

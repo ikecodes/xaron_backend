@@ -12,8 +12,9 @@ import globalErrorHandler from './controllers/errorController.js';
 import AppError from './utils/appError.js';
 
 //Routes
-import userRouter from './routes/userRoutes.js';
+import customerRouter from './routes/customersRoutes.js';
 import riderRouter from './routes/riderRoutes.js';
+import deliveryRouter from './routes/deliveryRoutes.js';
 
 const app = express();
 
@@ -46,8 +47,9 @@ app.use(xss());
 // prevent parameter pollution
 app.use(hpp());
 
-app.use('/api/v1/xaron/users', userRouter);
+app.use('/api/v1/xaron/customers', customerRouter);
 app.use('/api/v1/xaron/riders', riderRouter);
+app.use('/api/v1/xaron/deliveries', deliveryRouter);
 
 app.all('*', (req, res, next) => {
   next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
