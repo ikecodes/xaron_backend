@@ -64,14 +64,12 @@ const riderSchema = new mongoose.Schema(
     guarantoremail: {
       type: String,
       required: [true, 'Please provide guarantor email'],
-      unique: true,
       lowercase: true,
       validate: [validator.isEmail, 'Please provide a valid email'],
     },
     guarantorphone: {
       type: String,
       required: [true, 'Please provide guarantor phone number'],
-      unique: true,
     },
     guarantorcountry: {
       type: String,

@@ -7,6 +7,14 @@ import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
 
 export const signup = catchAsync(async (req, res, next) => {
+  const { email, phone } = req.body;
+  const rider = await Rider.findOne({ email, phone });
+  if (rider)
+    return new AppError(
+      'driver with this email or phone number already exists',
+      401
+    );
+
   const newRider = await Rider.create({
     firstname: req.body.firstname,
     lastname: req.body.lastname,
