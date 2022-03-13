@@ -14,6 +14,8 @@ const deliverySchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please tell us senders address'],
     },
+    senderlat: Number,
+    senderlng: Number,
     receivername: {
       type: String,
       required: [true, 'Please tell us receivers name!'],
@@ -26,18 +28,24 @@ const deliverySchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please tell us receivers address'],
     },
-    packagetype: {
-      type: String,
-      required: [true, 'Please tell us the type of package'],
-    },
-    packagequantity: {
-      type: String,
-      required: [true, 'Please tell us the quantity of package'],
-    },
-    packagenote: {
-      type: String,
-      required: [true, 'Please tell us package delivery note'],
-    },
+    receiverlat: Number,
+    receiverlng: Number,
+    package: [
+      {
+        packagetype: {
+          type: String,
+          required: [true, 'Please tell us the type of package'],
+        },
+        packagequantity: {
+          type: String,
+          required: [true, 'Please tell us the quantity of package'],
+        },
+        packagenote: {
+          type: String,
+          required: [true, 'Please tell us package delivery note'],
+        },
+      },
+    ],
     customer: {
       type: mongoose.Schema.ObjectId,
       ref: 'Customer',
@@ -52,7 +60,11 @@ const deliverySchema = new mongoose.Schema(
       type: Number,
       required: [true, 'What is the total amount charged for this delivery'],
     },
-    confirmed: {
+    orderstatus: {
+      type: Boolean,
+      default: false,
+    },
+    paymentstatus: {
       type: Boolean,
       default: false,
     },

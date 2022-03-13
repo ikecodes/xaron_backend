@@ -8,7 +8,6 @@ import createAndSendToken from '../utils/createAndSendToken.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
-  console.log(req.body);
   const rider = await Rider.findOne({ email, phone });
   if (rider)
     return next(
