@@ -8,11 +8,11 @@ import createAndSendToken from '../utils/createAndSendToken.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
+  console.log(req.body);
   const rider = await Rider.findOne({ email, phone });
   if (rider)
-    return new AppError(
-      'driver with this email or phone number already exists',
-      401
+    return next(
+      new AppError('driver with this email or phone number already exists', 401)
     );
 
   const newRider = await Rider.create({
@@ -27,6 +27,7 @@ export const signup = catchAsync(async (req, res, next) => {
     country: req.body.country,
     state: req.body.state,
     address: req.body.address,
+    partnerid: req.body.partnerid,
     guarantorname: req.body.guarantorname,
     guarantorrelationship: req.body.guarantorrelationship,
     guarantoremail: req.body.guarantoremail,

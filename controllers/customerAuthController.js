@@ -7,6 +7,12 @@ import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
 
 export const signup = catchAsync(async (req, res, next) => {
+  const { email, phone } = req.body;
+  const customer = await Customer.findOne({ email, phone });
+  if (customer)
+    return next(
+      new AppError('driver with this email or phone number already exists', 401)
+    );
   const newCustomer = await Customer.create({
     firstname: req.body.firstname,
     lastname: req.body.lastname,

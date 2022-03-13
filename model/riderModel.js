@@ -53,6 +53,10 @@ const riderSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    partnerid: {
+      type: String,
+      required: [true, 'Please provide Id of organisation'],
+    },
     guarantorname: {
       type: String,
       required: [true, 'Please tell us your guarantor name!'],
