@@ -90,12 +90,9 @@ customerSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
 };
 
 customerSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex');
+  const resetToken = Math.floor(100000 + Math.random() * 900000);
 
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+  this.passwordResetToken = resetToken;
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };

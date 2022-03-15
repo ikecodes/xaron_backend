@@ -28,3 +28,14 @@ export const getAllRiderDeliveries = catchAsync(async (req, res, next) => {
     data: deliveries,
   });
 });
+
+export const updateDeliveryStatus = catchAsync(async (req, res, next) => {
+  const newDelivery = await Delivery.findByIdAndUpdate(req.body.id, req.body, {
+    new: true,
+    runValidators: false,
+  });
+  res.status(200).json({
+    status: 'success',
+    data: newDelivery,
+  });
+});

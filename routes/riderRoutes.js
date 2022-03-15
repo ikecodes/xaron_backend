@@ -8,7 +8,7 @@ import {
   protect,
   resetPassword,
   forgotPassword,
-} from '../controllers/riderAuthController.js';
+} from '../controllers/riderController.js';
 const router = express.Router();
 
 router.post('/signup', signup);

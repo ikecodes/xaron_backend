@@ -101,7 +101,7 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  // 1) Get user based on POSTed email
+  // 1) Get user based on posted email
   const customer = await Customer.findOne({ email: req.body.email });
   if (!customer) {
     return next(new AppError('There is no user with email address.', 404));
@@ -116,8 +116,6 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     const resetURL = `${req.protocol}://${req.get(
       'host'
     )}/api/v1/users/resetPassword/${resetToken}`;
-    // await new Email(user, resetURL).sendPasswordReset();
-    // console.log(user.email);
     // await sendEmail({
     //   email: user.email,
     //   subject: 'your password reset token',
@@ -141,25 +139,22 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
 });
 export const resetPassword = catchAsync(async (req, res, next) => {
   //1) get user based on token
-  const hashedPassword = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
 
   const customer = await Customer.findOne({
-    passwordResetToken: hashedPassword,
+    passwordResetToken: req.body.token,
     passwordResetExpires: { $gt: Date.now() },
   });
   //2) set new password id token !expired and user still exists
+  console.log(customer);
   if (!customer) {
     return next(new AppError('token is invalid or has expired', 400));
   }
-  user.password = req.body.password;
-  user.passwordConfirm = req.body.passwordConfirm;
-  user.passwordResetExpires = undefined;
-  user.passwordResetToken = undefined;
+  customer.password = req.body.password;
+  customer.passwordConfirm = req.body.passwordConfirm;
+  customer.passwordResetExpires = undefined;
+  customer.passwordResetToken = undefined;
   await customer.save();
-  // createAndSendToken(user, 200, res);
+  createAndSendToken(user, 200, res);
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {

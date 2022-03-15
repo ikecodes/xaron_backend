@@ -8,13 +8,13 @@ import {
   protect,
   resetPassword,
   forgotPassword,
-} from '../controllers/customerAuthController.js';
+} from '../controllers/customerController.js';
 const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
 router.post('/forgotPassword', forgotPassword);
-router.patch('/resetPassword/:token', resetPassword);
+router.patch('/resetPassword', resetPassword);
 
 router.use(protect);
 router.post('/updateMe', updateMe);
