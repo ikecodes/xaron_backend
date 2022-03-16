@@ -40,12 +40,12 @@ const deliverySchema = new mongoose.Schema(
           type: String,
           required: [true, 'Please tell us the quantity of package'],
         },
-        packagenote: {
-          type: String,
-          required: [true, 'Please tell us package delivery note'],
-        },
       },
     ],
+    packagenote: {
+      type: String,
+      required: [true, 'Please tell us package delivery note'],
+    },
     customer: {
       type: mongoose.Schema.ObjectId,
       ref: 'Customer',
