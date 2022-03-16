@@ -61,12 +61,12 @@ const deliverySchema = new mongoose.Schema(
       required: [true, 'What is the total amount charged for this delivery'],
     },
     orderstatus: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: 'pending',
     },
     paymentstatus: {
-      type: Boolean,
-      default: false,
+      type: String,
+      default: 'pending',
     },
   },
 
