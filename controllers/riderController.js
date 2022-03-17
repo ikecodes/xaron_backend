@@ -105,6 +105,7 @@ export const protect = catchAsync(async (req, res, next) => {
   }
 
   req.rider = currentRider;
+  req.rider.riderId = decoded.id;
   next();
 });
 

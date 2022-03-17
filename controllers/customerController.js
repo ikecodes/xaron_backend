@@ -1,4 +1,3 @@
-import crypto from 'crypto';
 import Customer from '../model/customerModel.js';
 import jwt from 'jsonwebtoken';
 import { promisify } from 'util';
@@ -11,7 +10,10 @@ export const signup = catchAsync(async (req, res, next) => {
   const customer = await Customer.findOne({ email, phone });
   if (customer)
     return next(
-      new AppError('driver with this email or phone number already exists', 401)
+      new AppError(
+        'customer with this email or phone number already exists',
+        401
+      )
     );
   const newCustomer = await Customer.create({
     firstname: req.body.firstname,
@@ -97,6 +99,7 @@ export const protect = catchAsync(async (req, res, next) => {
     );
   }
   req.customer = currentCustomer;
+  req.customer.customerId = decoded.id;
   next();
 });
 

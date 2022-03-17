@@ -13,7 +13,7 @@ export const createDelivery = catchAsync(async (req, res, next) => {
 
 export const getAllCustomerDeliveries = catchAsync(async (req, res, next) => {
   const deliveries = await Delivery.find({
-    customer: req.body.customerId,
+    customer: req.customer.customerId,
   }).populate('rider');
   res.status(200).json({
     status: 'success',
@@ -22,7 +22,7 @@ export const getAllCustomerDeliveries = catchAsync(async (req, res, next) => {
 });
 
 export const getAllRiderDeliveries = catchAsync(async (req, res, next) => {
-  const deliveries = await Delivery.find({ rider: req.body.riderId });
+  const deliveries = await Delivery.find({ rider: req.rider.riderId });
   res.status(200).json({
     status: 'success',
     data: deliveries,
