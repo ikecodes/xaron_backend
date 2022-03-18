@@ -11,6 +11,16 @@ export const createDelivery = catchAsync(async (req, res, next) => {
   });
 });
 
+export const getDelivery = catchAsync(async (req, res, next) => {
+  const delivery = await Delivery.findOne({ _id: req.params.id }).populate(
+    'rider'
+  );
+  res.status(200).json({
+    status: 'success',
+    data: delivery,
+  });
+});
+
 export const getAllCustomerDeliveries = catchAsync(async (req, res, next) => {
   const deliveries = await Delivery.find({
     customer: req.customer.customerId,

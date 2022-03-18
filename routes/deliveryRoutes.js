@@ -4,6 +4,7 @@ const router = express.Router();
 
 import {
   createDelivery,
+  getDelivery,
   getAllCustomerDeliveries,
   getAllRiderDeliveries,
   updateDeliveryStatus,
@@ -19,4 +20,5 @@ router
 
 router.use(customerProtect);
 router.route('/').post(createDelivery).get(getAllCustomerDeliveries);
+router.route('/:id').get(getDelivery);
 export default router;
