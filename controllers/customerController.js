@@ -4,6 +4,7 @@ import { promisify } from 'util';
 import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
+import cloudinary from '../utils/cloudinary.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
@@ -56,6 +57,43 @@ export const updateMe = catchAsync(async (req, res, next) => {
   const updatedCustomer = await Customer.findByIdAndUpdate(
     req.customer._id,
     req.body,
+    {
+      new: true,
+      runValidators: true,
+    }
+  );
+  res.status(200).json({
+    status: 'success',
+    data: updatedCustomer,
+  });
+});
+export const updatePhoto = catchAsync(async (req, res, next) => {
+  if (req.body.password || req.body.passwordConfirm) {
+    next(
+      new AppError(
+        'this route is not for password update, please /updateMyPassword',
+        400
+      )
+    );
+  }
+  if (req.customer.publicid)
+    // first destroy the previous image from cloudinary
+    await cloudinary.uploader.destroy(req.customer.publicid);
+
+  // Then upload new image
+  const { secure_url, public_id } = await cloudinary.uploader.upload(
+    req.file.path,
+    {
+      upload_preset: 'profile_images',
+    }
+  );
+
+  const updatedCustomer = await Customer.findByIdAndUpdate(
+    req.customer._id,
+    {
+      photo: secure_url,
+      publicid: public_id,
+    },
     {
       new: true,
       runValidators: true,

@@ -30,6 +30,7 @@ const customerSchema = new mongoose.Schema(
       required: [true, 'Please provide your county'],
     },
     photo: { type: String, default: 'default.jpg' },
+    publicid: String,
     role: {
       type: String,
       enum: ['user', 'admin'],

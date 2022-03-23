@@ -47,6 +47,7 @@ const riderSchema = new mongoose.Schema(
       required: [true, 'Please provide your address'],
     },
     photo: { type: String, default: 'default.jpg' },
+    publicid: String,
     password: {
       type: String,
       required: [true, 'Please provide a password'],
