@@ -53,6 +53,12 @@ io.on('connection', (socket) => {
     socket.emit('driversList', drivers);
   });
 
+  // Get all online drivers with the partner Id given (customers action)
+  socket.on('getDriversByPartner', (id) => {
+    const driversByPartner = drivers.map((driver) => driver.partnerId === id);
+    socket.emit('driversList', driversByPartner);
+  });
+
   // Select a driver (customers action)
   // From the list of drivers you have, the customer will select a driver and send a pickup request to that driver.
   socket.on('selectDriver', (driversId, customerInfo) => {
