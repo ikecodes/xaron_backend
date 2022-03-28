@@ -9,10 +9,15 @@ import cloudinary from '../utils/cloudinary.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
-  const rider = await Rider.findOne({ email, phone });
-  if (rider)
+
+  const sameEmailRider = await Rider.findOne({ email });
+  if (sameEmailRider)
+    return next(new AppError('rider with this email already exists', 401));
+
+  const samePhoneRider = await Rider.findOne({ phone });
+  if (samePhoneRider)
     return next(
-      new AppError('driver with this email or phone number already exists', 401)
+      new AppError('rider with this phone number already exists', 401)
     );
 
   const newRider = await Rider.create({

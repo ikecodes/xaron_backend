@@ -8,14 +8,17 @@ import cloudinary from '../utils/cloudinary.js';
 
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
-  const customer = await Customer.findOne({ email, phone });
-  if (customer)
+
+  let sameEmailCustomer = await Customer.findOne({ email });
+  if (sameEmailCustomer)
+    return next(new AppError('customer with this email already exists', 401));
+
+  let samePhoneCustomer = await Customer.findOne({ phone });
+  if (samePhoneCustomer)
     return next(
-      new AppError(
-        'customer with this email or phone number already exists',
-        401
-      )
+      new AppError('customer with this phone number already exists', 401)
     );
+
   const newCustomer = await Customer.create({
     firstname: req.body.firstname,
     lastname: req.body.lastname,

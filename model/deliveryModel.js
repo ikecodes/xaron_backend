@@ -60,6 +60,10 @@ const deliverySchema = new mongoose.Schema(
       type: Number,
       required: [true, 'What is the total amount charged for this delivery'],
     },
+    partnerid: {
+      type: String,
+      required: [true, 'Which partner ID does this delivery belong to?'],
+    },
     orderstatus: {
       type: String,
       default: 'pending',

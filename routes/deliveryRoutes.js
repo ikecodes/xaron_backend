@@ -7,12 +7,15 @@ import {
   getDelivery,
   getAllCustomerDeliveries,
   getAllRiderDeliveries,
+  getAllPartnersDeliveries,
   updateDeliveryStatus,
 } from '../controllers/deliveryController.js';
 import { protect as customerProtect } from '../controllers/customerController.js';
 import { protect as riderProtect } from '../controllers/riderController.js';
 
 // router.get('/riderDeliveries', riderProtect, getAllRiderDeliveries);
+
+router.route('/partnerDeliveries').get(getAllPartnersDeliveries);
 router
   .route('/riderDeliveries')
   .get(riderProtect, getAllRiderDeliveries)
