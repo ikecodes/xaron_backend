@@ -6,7 +6,7 @@ import {
   login,
   getAllRiders,
   getRider,
-  deactivateRider,
+  updateRiderActiveStatus,
   updateMe,
   updatePhoto,
   updatePassword,
@@ -21,7 +21,7 @@ router.post('/login', login);
 
 router.get('/', getAllRiders);
 router.get('/:id', getRider);
-router.get('/deactivateRider/:id', deactivateRider);
+router.get('/updateRiderActiveStatus/:id', updateRiderActiveStatus);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);

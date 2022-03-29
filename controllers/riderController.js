@@ -92,16 +92,26 @@ export const getRider = catchAsync(async (req, res, next) => {
 // @desc activate or deactivate rider
 // @route PATCH api/v1/xaron/riders/6231078b009f24bd5fd0d727
 // @access public
-export const deactivateRider = catchAsync(async (req, res, next) => {
+export const updateRiderActiveStatus = catchAsync(async (req, res, next) => {
   const rider = await Rider.findOne({ _id: req.params.id });
   if (!rider) return next(new AppError('no rider found with this id', 404));
 
-  rider.active = false;
-  await rider.save();
-  res.status(200).json({
-    status: 'success',
-    message: 'rider successfully deactivated',
-  });
+  if (rider.active === true) {
+    rider.active = false;
+    await rider.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'rider successfully deactivated',
+    });
+  } else {
+    rider.active = true;
+    await rider.save();
+    res.status(200).json({
+      status: 'success',
+      message: 'rider successfully activated',
+      data: rider,
+    });
+  }
 });
 
 // @desc edit driver details
@@ -126,6 +136,9 @@ export const updateMe = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc update rider profile photo
+// @route POST api/v1/xaron/riders/updatePhoto
+// @access private
 export const updatePhoto = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     next(
@@ -146,7 +159,6 @@ export const updatePhoto = catchAsync(async (req, res, next) => {
       upload_preset: 'profile_images',
     }
   );
-
   const updatedRider = await Rider.findByIdAndUpdate(
     req.rider._id,
     {
@@ -164,6 +176,7 @@ export const updatePhoto = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc rider auth protector
 export const protect = catchAsync(async (req, res, next) => {
   let token;
   if (
