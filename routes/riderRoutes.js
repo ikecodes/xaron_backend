@@ -4,6 +4,9 @@ import upload from '../utils/multer.js';
 import {
   signup,
   login,
+  getAllRiders,
+  getRider,
+  deactivateRider,
   updateMe,
   updatePhoto,
   updatePassword,
@@ -15,6 +18,10 @@ const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
+
+router.get('/', getAllRiders);
+router.get('/:id', getRider);
+router.get('/deactivateRider/:id', deactivateRider);
 
 router.post('/forgotPassword', forgotPassword);
 router.patch('/resetPassword/:token', resetPassword);

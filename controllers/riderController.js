@@ -6,7 +6,11 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
 import cloudinary from '../utils/cloudinary.js';
+import { truncate } from 'fs/promises';
 
+// @desc register a rider
+// @route POST api/v1/xaron/riders/signup
+// @access private
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
 
@@ -48,6 +52,9 @@ export const signup = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc login a rider
+// @route POST api/v1/xaron/riders/login
+// @access private
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -59,6 +66,47 @@ export const login = catchAsync(async (req, res, next) => {
   createAndSendToken(rider, 200, res);
 });
 
+// @desc all riders available
+// @route GET api/v1/xaron/riders
+// @access public
+export const getAllRiders = catchAsync(async (req, res, next) => {
+  const riders = await Rider.find();
+  res.status(200).json({
+    status: 'success',
+    data: riders,
+  });
+});
+
+// @desc get a single rider
+// @route GET api/v1/xaron/riders/6231078b009f24bd5fd0d727
+// @access public
+export const getRider = catchAsync(async (req, res, next) => {
+  const rider = await Rider.findOne({ _id: req.params.id });
+  if (!rider) return next(new AppError('no rider found with this id', 404));
+  res.status(200).json({
+    status: 'success',
+    data: rider,
+  });
+});
+
+// @desc activate or deactivate rider
+// @route PATCH api/v1/xaron/riders/6231078b009f24bd5fd0d727
+// @access public
+export const deactivateRider = catchAsync(async (req, res, next) => {
+  const rider = await Rider.findOne({ _id: req.params.id });
+  if (!rider) return next(new AppError('no rider found with this id', 404));
+
+  rider.active = false;
+  await rider.save();
+  res.status(200).json({
+    status: 'success',
+    message: 'rider successfully deactivated',
+  });
+});
+
+// @desc edit driver details
+// @route GET api/v1/xaron/riders/updateMe
+// @access private
 export const updateMe = catchAsync(async (req, res, next) => {
   if (req.body.password || req.body.passwordConfirm) {
     next(
@@ -147,7 +195,6 @@ export const protect = catchAsync(async (req, res, next) => {
       new AppError('Rider recently changed password! Please log in again.', 401)
     );
   }
-
   req.rider = currentRider;
   req.rider.riderId = decoded.id;
   next();

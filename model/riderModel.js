@@ -95,7 +95,6 @@ const riderSchema = new mongoose.Schema(
     active: {
       type: Boolean,
       default: true,
-      select: false,
     },
   },
 
@@ -114,10 +113,10 @@ riderSchema.pre('save', function (next) {
   next();
 });
 
-riderSchema.pre(/^find/, function (next) {
-  this.find({ active: { $ne: false } });
-  next();
-});
+// riderSchema.pre(/^find/, function (next) {
+//   this.find({ active: { $ne: false } });
+//   next();
+// });
 
 riderSchema.methods.correctPassword = async function (
   candidatePassword,
