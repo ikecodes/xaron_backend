@@ -62,7 +62,7 @@ const deliverySchema = new mongoose.Schema(
     },
     partnerid: {
       type: String,
-      required: [true, 'Which partner ID does this delivery belong to?'],
+      required: [true, 'Which partner ID does this delivery belong to'],
     },
     orderstatus: {
       type: String,
