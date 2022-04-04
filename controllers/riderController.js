@@ -70,7 +70,11 @@ export const login = catchAsync(async (req, res, next) => {
 // @route GET api/v1/xaron/riders
 // @access public
 export const getAllRiders = catchAsync(async (req, res, next) => {
-  const riders = await Rider.find();
+  if (!req.body.partnerid)
+    return next(new AppError('please provide a partner Id', 401));
+  const riders = await Rider.find({ partnerid: req.body.partnerid });
+  if (!rider.length)
+    return next(new AppError('no rider with that partnerid found', 404));
   res.status(200).json({
     status: 'success',
     data: riders,
