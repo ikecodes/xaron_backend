@@ -73,7 +73,7 @@ export const getAllRiders = catchAsync(async (req, res, next) => {
   if (!req.body.partnerid)
     return next(new AppError('please provide a partner Id', 401));
   const riders = await Rider.find({ partnerid: req.body.partnerid });
-  if (!rider.length)
+  if (!riders.length)
     return next(new AppError('no rider with that partnerid found', 404));
   res.status(200).json({
     status: 'success',
