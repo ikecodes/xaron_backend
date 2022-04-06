@@ -55,16 +55,18 @@ export const getAllRiderDeliveries = catchAsync(async (req, res, next) => {
 // @route GET /api/v1/xaron/deliveries/partnerDeliveries
 // @access private
 export const getAllPartnersDeliveries = catchAsync(async (req, res, next) => {
-  if (!req.body.partnerid)
-    return next(new AppError('please add the partnerid to req body', 401));
+  if (!req.params.id)
+    return next(new AppError('please specify the partner ID', 401));
+  console.log(req.params.id);
   let d;
   d = new Date(Date.now());
   d.setDate(d.getDate() - 6);
   const deliveries = await Delivery.find({
-    partnerid: req.body.partnerid,
+    partnerid: req.params.id,
     createdAt: { $gte: d },
   }).populate('rider');
-  if (!deliveries) return res.send('No deliveries were made through the week');
+  if (!deliveries.length)
+    return res.send('No deliveries were made through the week');
   const total = deliveries.reduce((prev, curr) => {
     return prev + curr.charge;
   }, 0);

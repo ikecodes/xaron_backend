@@ -19,7 +19,7 @@ import deliveryRouter from './routes/deliveryRoutes.js';
 const app = express();
 
 app.set('veiw engine', 'ejs');
-//development logging
+
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }

@@ -19,8 +19,8 @@ const router = express.Router();
 router.post('/signup', signup);
 router.post('/login', login);
 
-router.get('/', getAllRiders);
-router.get('/:id', getRider);
+router.get('/partnerRiders/:id', getAllRiders);
+router.get('/partnerRider/:id', getRider);
 router.get('/updateRiderActiveStatus/:id', updateRiderActiveStatus);
 
 router.post('/forgotPassword', forgotPassword);
