@@ -4,6 +4,7 @@ import rateLimit from 'express-rate-limit';
 import helmet from 'helmet';
 import mongoSanitize from 'express-mongo-sanitize';
 import xss from 'xss-clean';
+import cors from 'cors';
 import hpp from 'hpp';
 import compression from 'compression';
 
@@ -23,6 +24,12 @@ app.set('veiw engine', 'ejs');
 if (process.env.NODE_ENV === 'development') {
   app.use(morgan('dev'));
 }
+
+app.use(
+  cors({
+    origin: '*',
+  })
+);
 //http security headers
 app.use(helmet());
 // limit requests for api
