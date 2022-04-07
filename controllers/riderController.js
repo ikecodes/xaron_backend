@@ -6,11 +6,11 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
 import cloudinary from '../utils/cloudinary.js';
-import { truncate } from 'fs/promises';
+import { Mail } from '../utils/sendEmail.js';
 
 // @desc register a rider
 // @route POST api/v1/xaron/riders/signup
-// @access private
+// @access public
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
 
@@ -52,9 +52,57 @@ export const signup = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc send token
+// @route POST api/v1/xaron/riders/sendEmail
+// @access public
+export const sendEmail = catchAsync(async (req, res, next) => {
+  const rider = await Rider.findOne({ email: req.body.email });
+  if (!rider) {
+    return next(new AppError('There is no user with email address.', 404));
+  }
+
+  const token = rider.createEmailConfirmToken();
+
+  await rider.save({ validateBeforeSave: false });
+
+  const options = {
+    mail: rider.email,
+    subject: 'Welcome to Xaron!',
+    email: '../email/xaron-welcome.ejs',
+    firtname: rider.firstname,
+    token: token,
+  };
+  await Mail(options);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'token sent to mail',
+  });
+});
+
+// @desc confirm token
+// @route POST api/v1/xaron/riders/confirmEmail
+// @access public
+export const confirmEmail = catchAsync(async (req, res, next) => {
+  const rider = await Rider.findOne({
+    emailConfirmToken: req.body.token,
+    email: req.body.email,
+  });
+
+  if (!rider) {
+    return next(new AppError('token is invalid', 400));
+  }
+  rider.emailConfirmToken = undefined;
+  await rider.save();
+  res.status(200).json({
+    status: 'success',
+    message: 'Token confirmation successful, you can now login',
+  });
+});
+
 // @desc login a rider
 // @route POST api/v1/xaron/riders/login
-// @access private
+// @access public
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -63,7 +111,11 @@ export const login = catchAsync(async (req, res, next) => {
   const rider = await Rider.findOne({ email }).select('+password');
   if (!rider || !(await rider.correctPassword(password, rider.password)))
     return next(new AppError('incorrect email or password', 401));
-  createAndSendToken(rider, 200, res);
+  if (rider.emailConfirmToken) {
+    return next(new AppError('you need to verify you email to login', 401));
+  } else {
+    createAndSendToken(rider, 200, res);
+  }
 });
 
 // @desc all riders available

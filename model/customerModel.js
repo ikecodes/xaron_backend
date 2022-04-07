@@ -42,6 +42,7 @@ const customerSchema = new mongoose.Schema(
       minlength: 8,
       select: false,
     },
+    emailConfirmToken: String,
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -88,6 +89,12 @@ customerSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
     return JWTTimestamp < changedTimestamp;
   }
   return false;
+};
+
+customerSchema.methods.createEmailConfirmToken = function () {
+  const confirmToken = Math.floor(100000 + Math.random() * 900000);
+  this.emailConfirmToken = confirmToken;
+  return confirmToken;
 };
 
 customerSchema.methods.createPasswordResetToken = function () {

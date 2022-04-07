@@ -4,6 +4,8 @@ import upload from '../utils/multer.js';
 import {
   signup,
   login,
+  sendEmail,
+  confirmEmail,
   getAllRiders,
   getRider,
   updateRiderActiveStatus,
@@ -18,6 +20,8 @@ const router = express.Router();
 
 router.post('/signup', signup);
 router.post('/login', login);
+router.post('/sendEmail', sendEmail);
+router.post('/confirmEmail', confirmEmail);
 
 router.get('/partnerRiders/:id', getAllRiders);
 router.get('/partnerRider/:id', getRider);

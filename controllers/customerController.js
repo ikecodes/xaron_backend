@@ -5,7 +5,11 @@ import AppError from '../utils/appError.js';
 import catchAsync from '../utils/catchAsync.js';
 import createAndSendToken from '../utils/createAndSendToken.js';
 import cloudinary from '../utils/cloudinary.js';
+import { Mail } from '../utils/sendEmail.js';
 
+// @desc register a customer
+// @route POST api/v1/xaron/customers/signup
+// @access public
 export const signup = catchAsync(async (req, res, next) => {
   const { email, phone } = req.body;
 
@@ -34,6 +38,57 @@ export const signup = catchAsync(async (req, res, next) => {
   });
 });
 
+// @desc send token
+// @route POST api/v1/xaron/customers/sendEmail
+// @access public
+export const sendEmail = catchAsync(async (req, res, next) => {
+  const customer = await Customer.findOne({ email: req.body.email });
+  if (!customer) {
+    return next(new AppError('There is no user with email address.', 404));
+  }
+
+  const token = customer.createEmailConfirmToken();
+
+  await customer.save({ validateBeforeSave: false });
+
+  const options = {
+    mail: customer.email,
+    subject: 'Welcome to Xaron!',
+    email: '../email/xaron-welcome.ejs',
+    firtname: customer.firstname,
+    token: token,
+  };
+  await Mail(options);
+
+  res.status(200).json({
+    status: 'success',
+    message: 'token sent to mail',
+  });
+});
+
+// @desc confirm token
+// @route POST api/v1/xaron/customers/confirmEmail
+// @access public
+export const confirmEmail = catchAsync(async (req, res, next) => {
+  const customer = await Customer.findOne({
+    emailConfirmToken: req.body.token,
+    email: req.body.email,
+  });
+
+  if (!customer) {
+    return next(new AppError('token is invalid', 400));
+  }
+  customer.emailConfirmToken = undefined;
+  await customer.save();
+  res.status(200).json({
+    status: 'success',
+    message: 'Token confirmation successful, you can now login',
+  });
+});
+
+// @desc confirm token
+// @route POST api/v1/xaron/customers/login
+// @access public
 export const login = catchAsync(async (req, res, next) => {
   const { email, password } = req.body;
   if (!email || !password) {
@@ -45,7 +100,11 @@ export const login = catchAsync(async (req, res, next) => {
     !(await customer.correctPassword(password, customer.password))
   )
     return next(new AppError('incorrect email or password', 401));
-  createAndSendToken(customer, 200, res);
+  if (customer.emailConfirmToken) {
+    return next(new AppError('you need to verify you email to login', 401));
+  } else {
+    createAndSendToken(customer, 200, res);
+  }
 });
 
 export const updateMe = catchAsync(async (req, res, next) => {

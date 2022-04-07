@@ -57,7 +57,6 @@ export const getAllRiderDeliveries = catchAsync(async (req, res, next) => {
 export const getAllPartnersDeliveries = catchAsync(async (req, res, next) => {
   if (!req.params.id)
     return next(new AppError('please specify the partner ID', 401));
-  console.log(req.params.id);
   let d;
   d = new Date(Date.now());
   d.setDate(d.getDate() - 6);

@@ -88,7 +88,7 @@ const riderSchema = new mongoose.Schema(
       type: String,
       required: [true, 'Please provide guarantor address'],
     },
-
+    emailConfirmToken: String,
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpires: Date,
@@ -136,9 +136,14 @@ riderSchema.methods.changedPasswordAfter = function (JWTTimestamp) {
   return false;
 };
 
+riderSchema.methods.createEmailConfirmToken = function () {
+  const confirmToken = Math.floor(100000 + Math.random() * 900000);
+  this.emailConfirmToken = confirmToken;
+  return confirmToken;
+};
+
 riderSchema.methods.createPasswordResetToken = function () {
   const resetToken = crypto.randomBytes(32).toString('hex');
-
   this.passwordResetToken = crypto
     .createHash('sha256')
     .update(resetToken)
