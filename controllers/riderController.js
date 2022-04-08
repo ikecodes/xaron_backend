@@ -270,29 +270,23 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  // 1) Get rider based on POSTed email
   const rider = await Rider.findOne({ email: req.body.email });
   if (!rider) {
-    return next(new AppError('There is no rider with email address.', 404));
+    return next(new AppError('There is no user with email address.', 404));
   }
 
-  // 2) Generate the random reset token
   const resetToken = rider.createPasswordResetToken();
   await rider.save({ validateBeforeSave: false });
 
-  // 3) Send it to rider's email
+  const options = {
+    mail: rider.email,
+    subject: 'Password Reset',
+    email: '../email/forgotPassword.ejs',
+    firtname: rider.firstname,
+    token: resetToken,
+  };
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/swifts/riders/resetPassword/${resetToken}`;
-    // await new Email(rider, resetURL).sendPasswordReset();
-    // console.log(rider.email);
-    // await sendEmail({
-    //   email: rider.email,
-    //   subject: 'your password reset token',
-    //   message: `this is a password reset email sent by Onuorah E. to test his API ${resetURL}`,
-    // });
-
+    await Mail(options);
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
@@ -300,35 +294,41 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
   } catch (err) {
     rider.passwordResetToken = undefined;
     rider.passwordResetExpires = undefined;
-    await rider.save({ validateBeforeSave: false });
-
+    await user.save({ validateBeforeSave: false });
     return next(
       new AppError('There was an error sending the email. Try again later!'),
       500
     );
   }
 });
-export const resetPassword = catchAsync(async (req, res, next) => {
-  //1) get rider based on token
-  const hashedPassword = crypto
-    .createHash('sha256')
-    .update(req.params.token)
-    .digest('hex');
 
+export const confirmResetToken = catchAsync(async (req, res, next) => {
   const rider = await Rider.findOne({
-    passwordResetToken: hashedPassword,
+    passwordResetToken: req.body.token,
     passwordResetExpires: { $gt: Date.now() },
   });
-  //2) set new password id token !expired and rider still exists
   if (!rider) {
     return next(new AppError('token is invalid or has expired', 400));
   }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'successful, proceed to reset password',
+    data: rider.email,
+  });
+});
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const rider = await Rider.findOne({
+    email: req.body.email,
+    passwordResetToken: req.body.token,
+  });
+  if (!rider) return next(new AppError('token is invalid', 401));
   rider.password = req.body.password;
-  rider.passwordConfirm = req.body.passwordConfirm;
   rider.passwordResetExpires = undefined;
   rider.passwordResetToken = undefined;
   await rider.save();
-  // createAndSendToken(rider, 200, res);
+  createAndSendToken(rider, 200, res);
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {

@@ -13,8 +13,9 @@ import {
   updatePhoto,
   updatePassword,
   protect,
-  resetPassword,
   forgotPassword,
+  confirmResetToken,
+  resetPassword,
 } from '../controllers/riderController.js';
 const router = express.Router();
 
@@ -28,7 +29,8 @@ router.get('/partnerRider/:id', getRider);
 router.get('/updateRiderActiveStatus/:id', updateRiderActiveStatus);
 
 router.post('/forgotPassword', forgotPassword);
-router.patch('/resetPassword/:token', resetPassword);
+router.post('/confirmResetToken', confirmResetToken);
+router.post('/resetPassword', resetPassword);
 
 router.use(protect);
 router.post('/updateMe', updateMe);

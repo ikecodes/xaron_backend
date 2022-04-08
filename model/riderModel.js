@@ -143,11 +143,8 @@ riderSchema.methods.createEmailConfirmToken = function () {
 };
 
 riderSchema.methods.createPasswordResetToken = function () {
-  const resetToken = crypto.randomBytes(32).toString('hex');
-  this.passwordResetToken = crypto
-    .createHash('sha256')
-    .update(resetToken)
-    .digest('hex');
+  const resetToken = Math.floor(100000 + Math.random() * 900000);
+  this.passwordResetToken = resetToken;
   this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
   return resetToken;
 };

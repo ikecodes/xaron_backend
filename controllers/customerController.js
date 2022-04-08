@@ -204,27 +204,23 @@ export const protect = catchAsync(async (req, res, next) => {
 });
 
 export const forgotPassword = catchAsync(async (req, res, next) => {
-  // 1) Get user based on posted email
   const customer = await Customer.findOne({ email: req.body.email });
   if (!customer) {
     return next(new AppError('There is no user with email address.', 404));
   }
 
-  // 2) Generate the random reset token
   const resetToken = customer.createPasswordResetToken();
   await customer.save({ validateBeforeSave: false });
 
-  // 3) Send it to user's email
+  const options = {
+    mail: customer.email,
+    subject: 'Password Reset',
+    email: '../email/forgotPassword.ejs',
+    firtname: customer.firstname,
+    token: resetToken,
+  };
   try {
-    const resetURL = `${req.protocol}://${req.get(
-      'host'
-    )}/api/v1/users/resetPassword/${resetToken}`;
-    // await sendEmail({
-    //   email: user.email,
-    //   subject: 'your password reset token',
-    //   message: `this is a password reset email sent by Onuorah E. to test his API ${resetURL}`,
-    // });
-
+    await Mail(options);
     res.status(200).json({
       status: 'success',
       message: 'Token sent to email!',
@@ -233,31 +229,41 @@ export const forgotPassword = catchAsync(async (req, res, next) => {
     customer.passwordResetToken = undefined;
     customer.passwordResetExpires = undefined;
     await user.save({ validateBeforeSave: false });
-
     return next(
       new AppError('There was an error sending the email. Try again later!'),
       500
     );
   }
 });
-export const resetPassword = catchAsync(async (req, res, next) => {
-  //1) get user based on token
 
+export const confirmResetToken = catchAsync(async (req, res, next) => {
   const customer = await Customer.findOne({
     passwordResetToken: req.body.token,
     passwordResetExpires: { $gt: Date.now() },
   });
-  //2) set new password id token !expired and user still exists
-  console.log(customer);
   if (!customer) {
     return next(new AppError('token is invalid or has expired', 400));
   }
+
+  res.status(200).json({
+    status: 'success',
+    message: 'successful, proceed to reset password',
+    data: customer.email,
+  });
+});
+
+export const resetPassword = catchAsync(async (req, res, next) => {
+  const customer = await Customer.findOne({
+    email: req.body.email,
+    passwordResetToken: req.body.token,
+  });
+  if (!customer) return next(new AppError('token is invalid', 401));
+
   customer.password = req.body.password;
-  customer.passwordConfirm = req.body.passwordConfirm;
   customer.passwordResetExpires = undefined;
   customer.passwordResetToken = undefined;
   await customer.save();
-  createAndSendToken(user, 200, res);
+  createAndSendToken(customer, 200, res);
 });
 
 export const updatePassword = catchAsync(async (req, res, next) => {

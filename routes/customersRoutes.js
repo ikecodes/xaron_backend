@@ -9,8 +9,9 @@ import {
   updatePhoto,
   updatePassword,
   protect,
-  resetPassword,
   forgotPassword,
+  confirmResetToken,
+  resetPassword,
 } from '../controllers/customerController.js';
 const router = express.Router();
 
@@ -19,7 +20,8 @@ router.post('/login', login);
 router.post('/sendEmail', sendEmail);
 router.post('/confirmEmail', confirmEmail);
 router.post('/forgotPassword', forgotPassword);
-router.patch('/resetPassword', resetPassword);
+router.post('/confirmResetToken', confirmResetToken);
+router.post('/resetPassword', resetPassword);
 
 router.use(protect);
 router.post('/updateMe', updateMe);
